@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SyncD — Sign In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #07070f;
+    --surface:  #0d0d1c;
+    --border:   #1a1a32;
+    --accent:   #3df5a8;
+    --accent2:  #ff3c6e;
+    --text:     #ddddf0;
+    --muted:    #4a4a6a;
+    --discord:  #5865F2;
+    --tiktok-p: #fe2c55;
+    --youtube:  #FF0000;
+    --x:        #e7e9ea;
+  }
+
+  html, body { height: 100%; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* GRAIN */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* ── LEFT PANEL ── */
+  .left-panel {
+    width: 52%;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .grid-bg {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(61,245,168,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(61,245,168,0.03) 1px, transparent 1px);
+    background-size: 56px 56px;
+    animation: gridShift 24s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes gridShift {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(56px); }
+  }
+
+  .scan-line {
+    position: absolute; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.2;
+    animation: scan 8s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes scan { 0% { top: -2px; } 100% { top: 100%; } }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+  }
+  .orb-tl { width: 360px; height: 360px; background: rgba(61,245,168,0.05); top: -120px; left: -80px; }
+  .orb-br { width: 280px; height: 280px; background: rgba(88,101,242,0.07); bottom: -80px; right: -60px; }
+
+  .left-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-decoration: none;
+    position: relative; z-index: 1;
+  }
+  .left-logo span { color: var(--muted); }
+
+  .left-content {
+    margin-top: auto;
+    margin-bottom: auto;
+    position: relative; z-index: 1;
+    padding: 40px 0;
+  }
+
+  .left-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .left-eyebrow::after { content:''; flex:1; height:1px; background:var(--border); max-width:50px; }
+
+  .left-headline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 6vw, 80px);
+    line-height: 0.9;
+    margin-bottom: 28px;
+  }
+  .left-headline .stroke {
+    -webkit-text-stroke: 1px rgba(221,221,240,0.25);
+    color: transparent;
+    display: block;
+  }
+
+  .left-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.75;
+    max-width: 340px;
+    margin-bottom: 48px;
+  }
+
+  /* Platform badges */
+  .platform-badges {
+    display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  .badge {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    transition: border-color 0.25s, color 0.25s;
+  }
+  .badge:hover { color: var(--text); }
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .bd-discord .badge-dot { background: var(--discord); }
+  .bd-tiktok  .badge-dot { background: var(--tiktok-p); }
+  .bd-youtube .badge-dot { background: var(--youtube); }
+  .bd-x       .badge-dot { background: var(--x); }
+  .bd-discord:hover { border-color: var(--discord); }
+  .bd-tiktok:hover  { border-color: var(--tiktok-p); }
+  .bd-youtube:hover { border-color: var(--youtube); }
+  .bd-x:hover       { border-color: var(--x); }
+
+  .left-footer {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    position: relative; z-index: 1;
+  }
+
+  /* ── RIGHT PANEL ── */
+  .right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 32px;
+    position: relative;
+  }
+
+  .auth-box {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  /* Tab switcher */
+  .tab-row {
+    display: flex;
+    border: 1px solid var(--border);
+    margin-bottom: 40px;
+    position: relative;
+  }
+  .tab-btn {
+    flex: 1;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 14px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    transition: color 0.2s;
+  }
+  .tab-btn.active { color: var(--bg); }
+  .tab-indicator {
+    position: absolute; top: 0; bottom: 0; left: 0;
+    width: 50%;
+    background: var(--accent);
+    transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+    z-index: 0;
+  }
+  .tab-indicator.right { transform: translateX(100%); }
+
+  /* Auth method selector */
+  .method-row {
+    display: flex; gap: 0;
+    border: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  .method-btn {
+    flex: 1;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 11px 8px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    border-right: 1px solid var(--border);
+    transition: color 0.2s, background 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .method-btn:last-child { border-right: none; }
+  .method-btn.active {
+    color: var(--accent);
+    background: rgba(61,245,168,0.06);
+  }
+  .method-btn svg { width: 13px; height: 13px; }
+
+  /* Section header */
+  .auth-heading {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  .auth-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 28px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.5px;
+  }
+
+  /* Form */
+  .field {
+    margin-bottom: 16px;
+  }
+  .field label {
+    display: block;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .field input, .field select {
+    width: 100%;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+    appearance: none;
+  }
+  .field input::placeholder { color: var(--muted); }
+  .field input:focus { border-color: var(--accent); }
+  .field input.error { border-color: var(--accent2); }
+
+  .phone-row { display: flex; gap: 0; }
+  .phone-row select {
+    width: 100px;
+    border-right: none;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 14px 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    outline: none;
+    flex-shrink: 0;
+  }
+  .phone-row select:focus { border-color: var(--accent); }
+  .phone-row input { border-left: none; }
+  .phone-row input:focus { border-color: var(--accent); }
+  .phone-row input:focus + select,
+  .phone-row select:focus { border-color: var(--accent); }
+
+  /* OTP row */
+  .otp-row {
+    display: flex; gap: 8px;
+    margin-top: 4px;
+  }
+  .otp-cell {
+    flex: 1;
+    height: 52px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .otp-cell:focus { border-color: var(--accent); }
+  .otp-cell.filled { border-color: rgba(61,245,168,0.4); color: var(--accent); }
+
+  /* Divider */
+  .divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 20px 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* Google button */
+  .btn-google {
+    width: 100%;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    padding: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    margin-bottom: 0;
+  }
+  .btn-google:hover { border-color: var(--text); background: rgba(255,255,255,0.03); }
+  .btn-google svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  /* Primary action */
+  .btn-primary {
+    width: 100%;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 16px;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 0.2s, transform 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary:hover { opacity: 0.92; transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-primary .btn-loader {
+    display: none;
+    width: 16px; height: 16px;
+    border: 2px solid rgba(0,0,0,0.3);
+    border-top-color: var(--bg);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin: 0 auto;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .btn-primary.loading .btn-text { display: none; }
+  .btn-primary.loading .btn-loader { display: block; }
+
+  .btn-secondary {
+    width: 100%;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 13px;
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.2s;
+  }
+  .btn-secondary:hover { background: rgba(61,245,168,0.07); }
+
+  /* Status message */
+  .status-msg {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    display: none;
+    border-left: 2px solid;
+  }
+  .status-msg.error { color: var(--accent2); border-color: var(--accent2); background: rgba(255,60,110,0.06); display: block; }
+  .status-msg.success { color: var(--accent); border-color: var(--accent); background: rgba(61,245,168,0.06); display: block; }
+  .status-msg.info { color: #8888ff; border-color: #8888ff; background: rgba(136,136,255,0.06); display: block; }
+
+  /* Terms note */
+  .terms-note {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 20px;
+    line-height: 1.6;
+  }
+  .terms-note a { color: var(--accent); text-decoration: none; }
+  .terms-note a:hover { text-decoration: underline; }
+
+  /* Step indicator for phone flow */
+  .step-dots {
+    display: flex; gap: 6px; justify-content: center;
+    margin-bottom: 28px;
+  }
+  .step-dot {
+    width: 24px; height: 3px;
+    background: var(--border);
+    transition: background 0.3s, width 0.3s;
+  }
+  .step-dot.active { background: var(--accent); width: 36px; }
+  .step-dot.done { background: rgba(61,245,168,0.35); }
+
+  /* Resend */
+  .resend-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: var(--muted);
+  }
+  .resend-btn {
+    background: none; border: none; color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 1px;
+    cursor: pointer; text-transform: uppercase;
+    opacity: 0.4;
+    transition: opacity 0.2s;
+  }
+  .resend-btn.ready { opacity: 1; }
+  .resend-btn.ready:hover { text-decoration: underline; }
+
+  /* Views */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* Success screen */
+  .success-screen {
+    text-align: center;
+    padding: 20px 0;
+  }
+  .success-icon {
+    width: 64px; height: 64px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 28px;
+    position: relative;
+  }
+  .success-icon::before {
+    content: '';
+    position: absolute; inset: -6px;
+    border-radius: 50%;
+    border: 1px solid rgba(61,245,168,0.2);
+    animation: successPing 1.5s ease-out infinite;
+  }
+  @keyframes successPing {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.5); opacity: 0; }
+  }
+  .success-icon svg { width: 28px; height: 28px; }
+  .success-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 40px;
+    margin-bottom: 10px;
+  }
+  .success-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    line-height: 1.7;
+    margin-bottom: 32px;
+  }
+
+  /* Recaptcha note */
+  .recaptcha-note {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-align: center;
+    margin-top: 16px;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 800px) {
+    body { flex-direction: column; }
+    .left-panel { width: 100%; padding: 32px 24px; min-height: auto; }
+    .left-content { padding: 24px 0; }
+    .left-headline { font-size: 48px; }
+    .right-panel { padding: 40px 24px; }
+    .left-footer { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LEFT PANEL -->
+<div class="left-panel">
+  <div class="grid-bg"></div>
+  <div class="scan-line"></div>
+  <div class="orb orb-tl"></div>
+  <div class="orb orb-br"></div>
+
+  <a class="left-logo" href="syncd-landing.html">SYNC<span>'D</span></a>
+
+  <div class="left-content">
+    <div class="left-eyebrow">Community Dashboard</div>
+    <h1 class="left-headline">
+      ALL IN<br/>
+      ONE<br/>
+      <span class="stroke">PLACE.</span>
+    </h1>
+    <p class="left-desc">
+      Connect your Discord, TikTok, YouTube & X accounts in minutes. One dashboard — every community, every conversation.
+    </p>
+    <div class="platform-badges">
+      <div class="badge bd-discord"><div class="badge-dot"></div>Discord</div>
+      <div class="badge bd-tiktok"><div class="badge-dot"></div>TikTok</div>
+      <div class="badge bd-youtube"><div class="badge-dot"></div>YouTube</div>
+      <div class="badge bd-x"><div class="badge-dot"></div>X / Twitter</div>
+    </div>
+  </div>
+
+  <div class="left-footer">© 2026 SyncD — Beta &nbsp;·&nbsp; Privacy &nbsp;·&nbsp; Terms</div>
+</div>
+
+<!-- RIGHT PANEL -->
+<div class="right-panel">
+  <div class="auth-box">
+
+    <!-- TAB SWITCHER -->
+    <div class="tab-row">
+      <div class="tab-indicator" id="tabIndicator"></div>
+      <button class="tab-btn active" id="tabSignup" onclick="switchTab('signup')">Sign Up</button>
+      <button class="tab-btn" id="tabLogin" onclick="switchTab('login')">Log In</button>
+    </div>
+
+    <!-- STATUS -->
+    <div class="status-msg" id="statusMsg"></div>
+
+    <!-- ── SIGNUP VIEW ── -->
+    <div class="view active" id="viewSignup">
+
+      <!-- Step dots (phone flow) -->
+      <div class="step-dots" id="signupDots" style="display:none;">
+        <div class="step-dot active" id="dot1"></div>
+        <div class="step-dot" id="dot2"></div>
+      </div>
+
+      <div class="auth-heading" id="signupHeading">Create Account</div>
+      <div class="auth-sub" id="signupSub">Choose how you want to join</div>
+
+      <!-- Method selector -->
+      <div class="method-row" id="signupMethodRow">
+        <button class="method-btn active" id="methodGoogle" onclick="setMethod('google')">
+          <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Google
+        </button>
+        <button class="method-btn" id="methodPhone" onclick="setMethod('phone')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.6 3.47 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.27-.85a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          Phone
+        </button>
+      </div>
+
+      <!-- GOOGLE SIGNUP -->
+      <div id="googleSignupForm">
+        <div class="field">
+          <label>Display Name</label>
+          <input type="text" id="signupName" placeholder="your name" />
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="signupEmail" placeholder="you@email.com" />
+        </div>
+        <button class="btn-google" onclick="handleGoogleAuth()">
+          <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continue with Google
+        </button>
+        <p class="recaptcha-note">Protected by reCAPTCHA Enterprise</p>
+      </div>
+
+      <!-- PHONE SIGNUP — STEP 1 -->
+      <div id="phoneSignupStep1" style="display:none;">
+        <div class="field">
+          <label>Phone Number</label>
+          <div class="phone-row">
+            <select id="countryCode">
+              <option value="+1">🇺🇸 +1</option>
+              <option value="+44">🇬🇧 +44</option>
+              <option value="+61">🇦🇺 +61</option>
+              <option value="+49">🇩🇪 +49</option>
+              <option value="+33">🇫🇷 +33</option>
+              <option value="+91">🇮🇳 +91</option>
+              <option value="+81">🇯🇵 +81</option>
+              <option value="+55">🇧🇷 +55</option>
+              <option value="+52">🇲🇽 +52</option>
+              <option value="+234">🇳🇬 +234</option>
+            </select>
+            <input type="tel" id="phoneInput" placeholder="(555) 000-0000" maxlength="14" oninput="formatPhone(this)" />
+          </div>
+        </div>
+        <!-- reCAPTCHA container -->
+        <div id="recaptcha-container" style="margin-bottom:16px;"></div>
+        <button class="btn-primary" id="btnSendOTP" onclick="handleSendOTP()">
+          <span class="btn-text">Send Verification Code</span>
+          <div class="btn-loader"></div>
+        </button>
+        <p class="recaptcha-note">We'll send a 6-digit code via SMS.<br/>Standard rates may apply.</p>
+      </div>
+
+      <!-- PHONE SIGNUP — STEP 2 (OTP) -->
+      <div id="phoneSignupStep2" style="display:none;">
+        <div class="field">
+          <label>Enter 6-Digit Code</label>
+          <div class="otp-row">
+            <input class="otp-cell" type="text" maxlength="1" inputmode="numeric" oninput="otpInput(this,0)" onkeydown="otpKeydown(this,0)" />
+            <input class="otp-cell" type="text" maxlength="1" inputmode="numeric" oninput="otpInput(this,1)" onkeydown="otpKeydown(this,1)" />
+            <input class="otp-cell" type="text" maxlength="1" inputmode="numeric" oninput="otpInput(this,2)" onkeydown="otpKeydown(this,2)" />
+            <input class="otp-cell" type="text" maxlength="1" inputmode="numeric" oninput="otpInput(this,3)" onkeydown="otpKeydown(this,3)" />
+            <input class="otp-cell" type="text" maxlength="1" inputmode="numeric" oninput="otpInput(this,4)" onkeydown="otpKeydown(this,4)" />
+            <input class="otp-cell" type="text" maxlength="1" inputmode="numeric" oninput="otpInput(this,5)" onkeydown="otpKeydown(this,5)" />
+          </div>
+          <div class="resend-row">
+            <span id="resendTimer">Resend in <span id="countdown">30</span>s</span>
+            <button class="resend-btn" id="resendBtn" onclick="handleResendOTP()" disabled>Resend Code</button>
+          </div>
+        </div>
+        <button class="btn-primary" id="btnVerifyOTP" onclick="handleVerifyOTP()" disabled>
+          <span class="btn-text">Verify & Create Account</span>
+          <div class="btn-loader"></div>
+        </button>
+        <button class="btn-secondary" onclick="backToPhoneStep1()">← Change Number</button>
+      </div>
+
+      <p class="terms-note">
+        By continuing, you agree to SyncD's
+        <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+      </p>
+    </div>
+
+    <!-- ── LOGIN VIEW ── -->
+    <div class="view" id="viewLogin">
+      <div class="auth-heading">Welcome Back</div>
+      <div class="auth-sub">Sign in to your SyncD account</div>
+
+      <!-- Method selector -->
+      <div class="method-row" id="loginMethodRow">
+        <button class="method-btn active" id="loginMethodGoogle" onclick="setLoginMethod('google')">
+          <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Google
+        </button>
+        <button class="method-btn" id="loginMethodPhone" onclick="setLoginMethod('phone')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.6 3.47 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.27-.85a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          Phone
+        </button>
+      </div>
+
+      <!-- GOOGLE LOGIN -->
+      <div id="googleLoginForm">
+        <button class="btn-google" onclick="handleGoogleAuth()">
+          <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continue with Google
+        </button>
+        <p class="recaptcha-note" style="margin-top:12px;">Protected by reCAPTCHA Enterprise</p>
+      </div>
+
+      <!-- PHONE LOGIN (same flow as signup) -->
+      <div id="phoneLoginForm" style="display:none;">
+        <div class="step-dots">
+          <div class="step-dot active" id="loginDot1"></div>
+          <div class="step-dot" id="loginDot2"></div>
+        </div>
+        <div id="phoneLoginStep1">
+          <div class="field">
+            <label>Phone Number</label>
+            <div class="phone-row">
+              <select id="loginCountryCode">
+                <option value="+1">🇺🇸 +1</option>
+                <option value="+44">🇬🇧 +44</option>
+                <option value="+61">🇦🇺 +61</option>
+                <option value="+91">🇮🇳 +91</option>
+                <option value="+234">🇳🇬 +234</option>
+              </select>
+              <input type="tel" id="loginPhoneInput" placeholder="(555) 000-0000" maxlength="14" oninput="formatPhone(this)" />
+            </div>
+          </div>
+          <div id="login-recaptcha-container" style="margin-bottom:16px;"></div>
+          <button class="btn-primary" id="btnLoginSendOTP" onclick="handleLoginSendOTP()">
+            <span class="btn-text">Send Code</span>
+            <div class="btn-loader"></div>
+          </button>
+        </div>
+        <div id="phoneLoginStep2" style="display:none;">
+          <div class="field">
+            <label>Enter 6-Digit Code</label>
+            <div class="otp-row">
+              <input class="otp-cell" type="text" maxlength="1" inputmode="numeric" oninput="loginOtpInput(this,0)" onkeydown="loginOtpKeydown(this,0)" />
+              <input class="otp-cell" type="text" maxlength="1" inputmode="numeric" oninput="loginOtpInput(this,1)" onkeydown="loginOtpKeydown(this,1)" />
+              <input class="otp-cell" type="text" maxlength="1" inputmode="numeric" oninput="loginOtpInput(this,2)" onkeydown="loginOtpKeydown(this,2)" />
+              <input class="otp-cell" type="text" maxlength="1" inputmode="numeric" oninput="loginOtpInput(this,3)" onkeydown="loginOtpKeydown(this,3)" />
+              <input class="otp-cell" type="text" maxlength="1" inputmode="numeric" oninput="loginOtpInput(this,4)" onkeydown="loginOtpKeydown(this,4)" />
+              <input class="otp-cell" type="text" maxlength="1" inputmode="numeric" oninput="loginOtpInput(this,5)" onkeydown="loginOtpKeydown(this,5)" />
+            </div>
+          </div>
+          <button class="btn-primary" id="btnLoginVerify" onclick="handleLoginVerifyOTP()" disabled>
+            <span class="btn-text">Sign In</span>
+            <div class="btn-loader"></div>
+          </button>
+          <button class="btn-secondary" onclick="backToLoginPhoneStep1()">← Change Number</button>
+        </div>
+      </div>
+
+      <p class="terms-note" style="margin-top:20px;">
+        Don't have an account? <a href="#" onclick="switchTab('signup');return false;">Sign up free</a>
+      </p>
+    </div>
+
+    <!-- ── SUCCESS VIEW ── -->
+    <div class="view" id="viewSuccess">
+      <div class="success-screen">
+        <div class="success-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="success-title">YOU'RE <span style="color:var(--accent)">IN.</span></div>
+        <p class="success-sub">Account created successfully.<br/>Redirecting to your dashboard...</p>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <div class="badge bd-discord"><div class="badge-dot"></div>Discord</div>
+          <div class="badge bd-tiktok"><div class="badge-dot"></div>TikTok</div>
+          <div class="badge bd-youtube"><div class="badge-dot"></div>YouTube</div>
+          <div class="badge bd-x"><div class="badge-dot"></div>X</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup,
+           RecaptchaVerifier, signInWithPhoneNumber,
+           onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyAHyxMA24gj5MScTqwIQT_mr1fBXRNejfE",
+    authDomain:        "sync-d-d2662.firebaseapp.com",
+    projectId:         "sync-d-d2662",
+    storageBucket:     "sync-d-d2662.firebasestorage.app",
+    messagingSenderId: "675444032052",
+    appId:             "1:675444032052:web:8849dd365eef86c1818061"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // If already logged in, skip straight to dashboard
+  onAuthStateChanged(auth, user => {
+    if (user) showSuccess();
+  });
+
+  // ── STATE ──
+  let currentTab         = 'signup';
+  let currentMethod      = 'google';
+  let currentLoginMethod = 'google';
+  let confirmationResult = null;
+  let resendInterval     = null;
+  let resendSeconds      = 30;
+  const signupOtp = ['','','','','',''];
+  const loginOtp  = ['','','','','',''];
+
+  // ── TAB SWITCH ──
+  window.switchTab = function(tab) {
+    currentTab = tab;
+    document.getElementById('viewSignup').classList.toggle('active', tab === 'signup');
+    document.getElementById('viewLogin').classList.toggle('active', tab === 'login');
+    document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
+    document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+    document.getElementById('tabIndicator').classList.toggle('right', tab === 'login');
+    clearStatus();
+  };
+
+  // ── METHOD SELECT ──
+  window.setMethod = function(method) {
+    currentMethod = method;
+    document.getElementById('methodGoogle').classList.toggle('active', method === 'google');
+    document.getElementById('methodPhone').classList.toggle('active', method === 'phone');
+    document.getElementById('googleSignupForm').style.display = method === 'google' ? 'block' : 'none';
+    document.getElementById('phoneSignupStep1').style.display = method === 'phone' ? 'block' : 'none';
+    document.getElementById('phoneSignupStep2').style.display = 'none';
+    document.getElementById('signupDots').style.display = method === 'phone' ? 'flex' : 'none';
+    resetPhoneStep();
+    clearStatus();
+  };
+
+  window.setLoginMethod = function(method) {
+    currentLoginMethod = method;
+    document.getElementById('loginMethodGoogle').classList.toggle('active', method === 'google');
+    document.getElementById('loginMethodPhone').classList.toggle('active', method === 'phone');
+    document.getElementById('googleLoginForm').style.display = method === 'google' ? 'block' : 'none';
+    document.getElementById('phoneLoginForm').style.display = method === 'phone' ? 'block' : 'none';
+    clearStatus();
+  };
+
+  // ── STATUS ──
+  function showStatus(msg, type = 'info') {
+    const el = document.getElementById('statusMsg');
+    el.textContent = msg;
+    el.className = 'status-msg ' + type;
+  }
+  function clearStatus() {
+    const el = document.getElementById('statusMsg');
+    el.className = 'status-msg';
+    el.textContent = '';
+  }
+
+  // ── GOOGLE AUTH ──
+  window.handleGoogleAuth = async function() {
+    clearStatus();
+    showStatus('Opening Google sign-in...', 'info');
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      showSuccess();
+    } catch (err) {
+      showStatus(friendlyError(err.code), 'error');
+    }
+  };
+
+  // ── PHONE FORMAT ──
+  window.formatPhone = function(input) {
+    let v = input.value.replace(/\D/g, '');
+    if (v.length >= 7) v = v.slice(0,3) + ') ' + v.slice(3,6) + '-' + v.slice(6,10);
+    else if (v.length >= 4) v = v.slice(0,3) + ') ' + v.slice(3);
+    if (v.length > 0 && !v.startsWith('(')) v = '(' + v;
+    input.value = v;
+  };
+
+  // ── SEND OTP (signup) ──
+  window.handleSendOTP = async function() {
+    const phone = getCleanPhone('countryCode', 'phoneInput');
+    if (!phone) { showStatus('Enter a valid phone number.', 'error'); return; }
+    setLoading('btnSendOTP', true);
+    clearStatus();
+    try {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { size: 'invisible' });
+      confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
+      setLoading('btnSendOTP', false);
+      goToOTPStep();
+    } catch (err) {
+      showStatus(friendlyError(err.code), 'error');
+      setLoading('btnSendOTP', false);
+      if (window.recaptchaVerifier) window.recaptchaVerifier.clear();
+    }
+  };
+
+  // ── SEND OTP (login) ──
+  window.handleLoginSendOTP = async function() {
+    const phone = getCleanPhone('loginCountryCode', 'loginPhoneInput');
+    if (!phone) { showStatus('Enter a valid phone number.', 'error'); return; }
+    setLoading('btnLoginSendOTP', true);
+    clearStatus();
+    try {
+      window.loginRecaptchaVerifier = new RecaptchaVerifier(auth, 'login-recaptcha-container', { size: 'invisible' });
+      confirmationResult = await signInWithPhoneNumber(auth, phone, window.loginRecaptchaVerifier);
+      setLoading('btnLoginSendOTP', false);
+      document.getElementById('phoneLoginStep1').style.display = 'none';
+      document.getElementById('phoneLoginStep2').style.display = 'block';
+      document.getElementById('loginDot1').classList.add('done');
+      document.getElementById('loginDot2').classList.add('active');
+      showStatus('Code sent! Check your SMS.', 'success');
+    } catch (err) {
+      showStatus(friendlyError(err.code), 'error');
+      setLoading('btnLoginSendOTP', false);
+      if (window.loginRecaptchaVerifier) window.loginRecaptchaVerifier.clear();
+    }
+  };
+
+  function getCleanPhone(codeId, inputId) {
+    const code = document.getElementById(codeId).value;
+    const num  = document.getElementById(inputId).value.replace(/\D/g,'');
+    if (num.length < 10) return null;
+    return code + num;
+  }
+
+  // ── OTP STEP UI ──
+  function goToOTPStep() {
+    document.getElementById('phoneSignupStep1').style.display = 'none';
+    document.getElementById('phoneSignupStep2').style.display = 'block';
+    document.getElementById('dot1').classList.add('done');
+    document.getElementById('dot2').classList.add('active');
+    showStatus('Code sent! Check your SMS.', 'success');
+    startResendTimer();
+    document.querySelectorAll('#phoneSignupStep2 .otp-cell')[0].focus();
+  }
+
+  window.backToPhoneStep1 = function() {
+    document.getElementById('phoneSignupStep2').style.display = 'none';
+    document.getElementById('phoneSignupStep1').style.display = 'block';
+    document.getElementById('dot1').classList.remove('done');
+    document.getElementById('dot2').classList.remove('active');
+    clearStatus(); clearInterval(resendInterval);
+    if (window.recaptchaVerifier) { window.recaptchaVerifier.clear(); window.recaptchaVerifier = null; }
+  };
+
+  window.backToLoginPhoneStep1 = function() {
+    document.getElementById('phoneLoginStep2').style.display = 'none';
+    document.getElementById('phoneLoginStep1').style.display = 'block';
+    document.getElementById('loginDot1').classList.remove('done');
+    document.getElementById('loginDot2').classList.remove('active');
+    clearStatus();
+    if (window.loginRecaptchaVerifier) { window.loginRecaptchaVerifier.clear(); window.loginRecaptchaVerifier = null; }
+  };
+
+  // ── OTP CELL LOGIC ──
+  window.otpInput = function(el, idx) {
+    const v = el.value.replace(/\D/g,'');
+    el.value = v; signupOtp[idx] = v;
+    el.classList.toggle('filled', !!v);
+    if (v && idx < 5) document.querySelectorAll('#phoneSignupStep2 .otp-cell')[idx+1].focus();
+    document.getElementById('btnVerifyOTP').disabled = signupOtp.join('').length < 6;
+  };
+  window.otpKeydown = function(el, idx) {
+    if (el.key === 'Backspace' && !el.value && idx > 0)
+      document.querySelectorAll('#phoneSignupStep2 .otp-cell')[idx-1].focus();
+  };
+  window.loginOtpInput = function(el, idx) {
+    const v = el.value.replace(/\D/g,'');
+    el.value = v; loginOtp[idx] = v;
+    el.classList.toggle('filled', !!v);
+    if (v && idx < 5) document.querySelectorAll('#phoneLoginStep2 .otp-cell')[idx+1].focus();
+    document.getElementById('btnLoginVerify').disabled = loginOtp.join('').length < 6;
+  };
+  window.loginOtpKeydown = function(el, idx) {
+    if (el.key === 'Backspace' && !el.value && idx > 0)
+      document.querySelectorAll('#phoneLoginStep2 .otp-cell')[idx-1].focus();
+  };
+
+  // ── VERIFY OTP ──
+  window.handleVerifyOTP = async function() {
+    const code = signupOtp.join('');
+    setLoading('btnVerifyOTP', true);
+    clearStatus();
+    try {
+      await confirmationResult.confirm(code);
+      showSuccess();
+    } catch (err) {
+      showStatus(friendlyError(err.code), 'error');
+      setLoading('btnVerifyOTP', false);
+    }
+  };
+
+  window.handleLoginVerifyOTP = async function() {
+    const code = loginOtp.join('');
+    setLoading('btnLoginVerify', true);
+    clearStatus();
+    try {
+      await confirmationResult.confirm(code);
+      showSuccess();
+    } catch (err) {
+      showStatus(friendlyError(err.code), 'error');
+      setLoading('btnLoginVerify', false);
+    }
+  };
+
+  // ── RESEND ──
+  function startResendTimer() {
+    resendSeconds = 30;
+    const btn = document.getElementById('resendBtn');
+    const countdown = document.getElementById('countdown');
+    const timerLabel = document.getElementById('resendTimer');
+    btn.disabled = true;
+    btn.classList.remove('ready');
+    timerLabel.style.display = '';
+    clearInterval(resendInterval);
+    resendInterval = setInterval(() => {
+      resendSeconds--;
+      countdown.textContent = resendSeconds;
+      if (resendSeconds <= 0) {
+        clearInterval(resendInterval);
+        timerLabel.style.display = 'none';
+        btn.disabled = false;
+        btn.classList.add('ready');
+      }
+    }, 1000);
+  }
+
+  window.handleResendOTP = async function() {
+    const phone = getCleanPhone('countryCode', 'phoneInput');
+    if (!phone) return;
+    try {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { size: 'invisible' });
+      confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
+      showStatus('New code sent!', 'success');
+      startResendTimer();
+      document.getElementById('resendBtn').classList.remove('ready');
+    } catch (err) {
+      showStatus(friendlyError(err.code), 'error');
+    }
+  };
+
+  // ── SUCCESS ──
+  function showSuccess() {
+    document.getElementById('viewSignup').classList.remove('active');
+    document.getElementById('viewLogin').classList.remove('active');
+    document.getElementById('viewSuccess').classList.add('active');
+    clearStatus();
+    // Redirect after 2s — swap for your actual dashboard URL
+    setTimeout(() => { window.location.href = '/dashboard.html'; }, 2000);
+  }
+
+  // ── UTILS ──
+  function setLoading(btnId, state) {
+    const btn = document.getElementById(btnId);
+    btn.classList.toggle('loading', state);
+    btn.disabled = state;
+  }
+
+  function resetPhoneStep() {
+    const pi = document.getElementById('phoneInput');
+    if (pi) pi.value = '';
+    document.querySelectorAll('#phoneSignupStep2 .otp-cell').forEach(c => { c.value=''; c.classList.remove('filled'); });
+    signupOtp.fill('');
+  }
+
+  function friendlyError(code) {
+    const map = {
+      'auth/popup-closed-by-user':      'Sign-in cancelled.',
+      'auth/popup-blocked':             'Popup blocked — allow popups for this site.',
+      'auth/invalid-verification-code': 'Wrong code. Double-check and try again.',
+      'auth/code-expired':              'Code expired. Request a new one.',
+      'auth/too-many-requests':         'Too many attempts. Wait a minute and retry.',
+      'auth/invalid-phone-number':      'Invalid phone number format.',
+      'auth/network-request-failed':    'Network error. Check your connection.',
+    };
+    return map[code] || 'Something went wrong. Please try again.';
+  }
+</script>
+</body>
+</html>
